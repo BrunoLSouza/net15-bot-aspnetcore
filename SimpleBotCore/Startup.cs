@@ -12,6 +12,7 @@ using SimpleBotCore.Logic;
 
 namespace SimpleBotCore
 {
+    //teste
     public class Startup
     {
         public Startup(IConfiguration configuration)

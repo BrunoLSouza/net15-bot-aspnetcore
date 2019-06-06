@@ -47,6 +47,9 @@ namespace SimpleBotCore.Controllers
 
             var message = new SimpleMessage(userFromId, userFromName, text);
 
+            var log = new LogMongo();
+            log.AdicionaLog(ref message);
+
             string response = _bot.Reply(message);
 
             await ReplyUserAsync(activity, response);

@@ -46,9 +46,8 @@ namespace SimpleBotCore.Controllers
             string userFromName = activity.From.Name;
 
             var message = new SimpleMessage(userFromId, userFromName, text);
-
-            var log = new LogMongo();
-            log.AdicionaLog(ref message);
+                        
+            LogMongo.AdicionaLog(ref message);
 
             string response = _bot.Reply(message);
 

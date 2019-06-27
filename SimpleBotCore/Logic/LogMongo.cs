@@ -1,46 +1,42 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using MongoDB.Bson;
 using MongoDB.Driver;
-using MongoDB.Bson;
+using System.Linq;
 
 namespace SimpleBotCore.Logic
 {
-    public class LogMongo
+    public static class LogMongo
     {
-
-        public void AdicionaLog(ref SimpleMessage msg)
+        public static string ConnectionString { get; set; }
+        public static string Banco { get; set; }
+        public static string Collection { get; set; }
+        public static IMongoClient client { get; set; }
+        public static IMongoDatabase db { get; set; }
+        public static IMongoCollection<BsonDocument> col { get; set; }
+        public static void Iniciar()
         {
-            var client = new MongoClient("mongodb://localhost:27017");
-
-            var db = client.GetDatabase("BotDB");
-            var col = db.GetCollection<BsonDocument>("log");
-
-
-            //grava log
-            var log = new BsonDocument()
-            {
-                {"Id",msg.Id },
-                {"Usuario",msg.User },
-                {"Mensagem", msg.Text }
-            };
-            col.InsertOne(log);
-
-            //find para count
-            //var filtro = new BsonDocument() {};
-            var filtro = new BsonDocument() {
-                {"Id", msg.Id.ToString()}
-            };
-
-            //string sFiltro = "{num: {$gt: 5}}";
-            //var filtro = BsonDocument.Parse(sFiltro);
-            //Builders<BsonDocument>.Filter.Gt();
-
-            var res = col.Find(filtro).ToList();
-
-            msg.Count = res.Count();
+            client = new MongoClient(ConnectionString);
+            db = client.GetDatabase(Banco);
+            col = db.GetCollection<BsonDocument>(Collection);
         }
 
+        public static void AdicionaLog(ref SimpleMessage message)
+        {   
+            message.Count = countLog(message);
+        }
+        private static int countLog(SimpleMessage message)
+        {
+            var doc = new BsonDocument() {
+                { "Id", message.Id },
+                { "Usuario", message.User },
+                { "Mensagem", message.Text }
+            };
+
+            col.InsertOne(doc);
+        
+            var filter = Builders<BsonDocument>.Filter.Eq("Id", message.Id);
+            var results = col.Find(filter).ToList();
+            return results.Count();
+        }
     }
 }
+

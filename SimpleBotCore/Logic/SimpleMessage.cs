@@ -1,20 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
 
 namespace SimpleBotCore.Logic
 {
-    public class SimpleMessage
+    public class SimpleMessage : Base
     {
-        public string Id { get; }
-        public string User { get; }
-        public string Text { get; }
+        public string LogId { get; set; }
+        public string User { get; set; }
+        public string Text { get; set; }
         public int Count { set; get; }
 
         public SimpleMessage(string id, string username, string text)
         {
-            this.Id = id;
+            this.LogId = id;
             this.User = username;
             this.Text = text;
         }

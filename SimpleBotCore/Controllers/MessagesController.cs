@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Schema;
 using SimpleBotCore.Logic;
+using SimpleBotCore.Repository;
 
 namespace SimpleBotCore.Controllers
 {
@@ -14,12 +15,12 @@ namespace SimpleBotCore.Controllers
     {
         SimpleBotUser _bot = null;
 
-        LogMongo _logMongo = null;
+        private MessageRepository _ctx { get; }
 
-        public MessagesController(SimpleBotUser bot, LogMongo logMongo)
+        public MessagesController(SimpleBotUser bot, MessageRepository ctx)
         {
             this._bot = bot;
-            this._logMongo = logMongo;            
+            this._ctx = ctx;            
         }        
 
         [HttpGet]
@@ -50,10 +51,10 @@ namespace SimpleBotCore.Controllers
 
             var message = new SimpleMessage(userFromId, userFromName, text);
 
-            this._logMongo.Adicionar(message);
+            this._ctx.Add(message);
 
-            var _result = _logMongo.Find(message.Id);
-            message.Count = _result.Count;
+            var _result = _ctx.FindLogId(message.LogId).Result;
+            message.Count = _result.Count();
 
             string response = _bot.Reply(message);
 

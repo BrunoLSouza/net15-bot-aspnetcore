@@ -12,12 +12,15 @@ namespace SimpleBotCore.Controllers
     [Route("api/[controller]")]
     public class MessagesController : Controller
     {
-        SimpleBotUser _bot = new SimpleBotUser();
+        SimpleBotUser _bot = null;
 
-        public MessagesController(SimpleBotUser bot)
+        LogMongo _logMongo = null;
+
+        public MessagesController(SimpleBotUser bot, LogMongo logMongo)
         {
             this._bot = bot;
-        }
+            this._logMongo = logMongo;            
+        }        
 
         [HttpGet]
         public string Get()
@@ -46,8 +49,11 @@ namespace SimpleBotCore.Controllers
             string userFromName = activity.From.Name;
 
             var message = new SimpleMessage(userFromId, userFromName, text);
-                        
-            LogMongo.AdicionaLog(ref message);
+
+            this._logMongo.Adicionar(message);
+
+            var _result = _logMongo.Find(message.Id);
+            message.Count = _result.Count;
 
             string response = _bot.Reply(message);
 

@@ -1,29 +1,25 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Driver;
+using SimpleBotCore.Logic.Interface;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace SimpleBotCore.Logic
 {
-    public static class LogMongo
-    {
-        public static string ConnectionString { get; set; }
-        public static string Banco { get; set; }
-        public static string Collection { get; set; }
+    public class LogMongo : ILogMongo
+    {       
         public static IMongoClient client { get; set; }
         public static IMongoDatabase db { get; set; }
         public static IMongoCollection<BsonDocument> col { get; set; }
-        public static void Iniciar()
-        {
-            client = new MongoClient(ConnectionString);
-            db = client.GetDatabase(Banco);
-            col = db.GetCollection<BsonDocument>(Collection);
-        }
 
-        public static void AdicionaLog(ref SimpleMessage message)
-        {   
-            message.Count = countLog(message);
+        public LogMongo()
+        {
+            client = new MongoClient(Config.ConnectionString);            
+            db = client.GetDatabase(Config.Banco);
+            col = db.GetCollection<BsonDocument>(Config.Collection);
         }
-        private static int countLog(SimpleMessage message)
+        
+        public void Adicionar(SimpleMessage message)
         {
             var doc = new BsonDocument() {
                 { "Id", message.Id },
@@ -31,12 +27,14 @@ namespace SimpleBotCore.Logic
                 { "Mensagem", message.Text }
             };
 
-            col.InsertOne(doc);
-        
-            var filter = Builders<BsonDocument>.Filter.Eq("Id", message.Id);
-            var results = col.Find(filter).ToList();
-            return results.Count();
+            col.InsertOne(doc);            
         }
+
+        public List<BsonDocument> Find(string id)
+        {
+            var filter = Builders<BsonDocument>.Filter.Eq("Id", id);
+            return col.Find(filter).ToList();
+        }        
     }
 }
 

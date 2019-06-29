@@ -26,10 +26,17 @@ namespace SimpleBotCore
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton<SimpleBotUser>();
-            LogMongo.ConnectionString = Configuration.GetSection("ConnectionStrings:ConnectionString").Value;
-            LogMongo.Banco = Configuration.GetSection("ConnectionStrings:Banco").Value;
-            LogMongo.Collection = Configuration.GetSection("ConnectionStrings:Collection").Value;
-            LogMongo.Iniciar();
+            //LogMongo.ConnectionString = Configuration.GetSection("ConnectionStrings:ConnectionString").Value;
+            //LogMongo.Banco = Configuration.GetSection("ConnectionStrings:Banco").Value;
+            //LogMongo.Collection = Configuration.GetSection("ConnectionStrings:Collection").Value;
+            //LogMongo.Iniciar();
+
+            Config.ConnectionString = Configuration.GetSection("ConnectionStrings:ConnectionString").Value;
+            Config.Banco = Configuration.GetSection("ConnectionStrings:Banco").Value;
+            Config.Collection = Configuration.GetSection("ConnectionStrings:Collection").Value;
+
+            services.AddSingleton<LogMongo>();
+
             services.AddMvc();
         }
 
